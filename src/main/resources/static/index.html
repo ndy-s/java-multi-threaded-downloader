@@ -2,14 +2,47 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Downloader</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Multi-Threaded File Downloader</h1>
-    <form action="/download" method="post">
-        <label for="fileUrl">File URL:</label><br>
-        <input type="text" id="fileUrl" name="fileUrl" size="50" placeholder="https://example.com/samplefile.zip"><br><br>
-        <input type="submit" value="Download">
-    </form>
+<div class="container mt-5">
+    <h2 class="text-center">Multi-Threaded File Downloader</h2>
+    <div class="card p-4 shadow-sm">
+        <form id="downloadForm">
+            <div class="mb-3">
+                <label for="fileUrl" class="form-label">Enter File URL:</label>
+                <input type="text" class="form-control" id="fileUrl" placeholder="https://example.com/file.zip" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Download</button>
+        </form>
+        <div id="message" class="mt-3 text-center"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("downloadForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const fileUrl = document.getElementById("fileUrl").value;
+        const messageDiv = document.getElementById("message");
+
+        messageDiv.innerHTML = "<p class='text-info'>Downloading...</p>";
+
+        fetch("/download", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ fileUrl })
+        })
+            .then(response => response.text())
+            .then(data => {
+                messageDiv.innerHTML = "<p class='text-success'>Download Complete!</p>";
+            })
+            .catch(error => {
+                messageDiv.innerHTML = "<p class='text-danger'>Download Failed: " + error + "</p>";
+            });
+    });
+</script>
 </body>
 </html>
